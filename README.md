@@ -1,11 +1,11 @@
 # 🛡️ AntiScam - Phishing Detector
 
-Aplikasi deteksi URL Phishing berbasis **Machine Learning (XGBoost)** dan **Auto-Whitelist (Tranco Top Domains)** yang dibangun menggunakan **Streamlit**.
+Aplikasi deteksi URL Phishing berbasis Machine Learning (XGBoost) dan Auto-Whitelist (Tranco Top Domains) yang dibangun menggunakan Streamlit.
 
 ##  Fitur Utama
-* **Lapis 1 (Auto-Whitelist):** Pengecekan otomatis ke *Tranco Top 250k Domains* & TLD Instansi Resmi (`go.id`, `ac.id`, dll) untuk menjamin 0% risiko pada situs resmi.
-* **Lapis 2 (ML XGBoost):** Prediksi berbasis *Lexical URL Features* menggunakan model XGBoost.
-* **Lapis 3 (Hard-Rules Calibration):** Deteksi khusus untuk *Typosquatting* (peniruan merek seperti `paypa1`, `g00gle`), IP Direct Address, serta penyesuaian skor ekstrem (0% vs ≥90%).
+Lapis 1 (Auto-Whitelist): Pengecekan otomatis ke Tranco Top 250k Domains & TLD Instansi Resmi (go.id, ac.id, dll) untuk menjamin 0% risiko pada situs resmi.
+Lapis 2 (ML XGBoost): Prediksi berbasis Lexical URL Features menggunakan model XGBoost.
+Lapis 3 (Hard-Rules Calibration): Deteksi khusus untuk Typosquatting (peniruan merek seperti paypa1, g00gle), IP Direct Address, serta penyesuaian skor ekstrem (0% vs ≥90%).
 
 ##  Teknologi yang Digunakan
 Python 3.10+
