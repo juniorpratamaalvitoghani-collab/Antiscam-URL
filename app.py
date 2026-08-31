@@ -9,14 +9,12 @@ import time
 st.set_page_config(page_title="AntiScam - Phishing Detector", page_icon="🛡️", layout="centered")
 st.markdown("""
 <style>
-    /* 1. Sembunyikan Header bawaan */
     header {visibility: hidden !important;}
     #MainMenu {visibility: hidden !important;}
     .stAppDeployButton {display: none !important;}
     div[data-testid="stDecoration"] {display: none !important;}
     div[data-testid="stStatusWidget"] {display: none !important;}
     
-    /* 2. Kustomisasi Footer */
     footer {
         visibility: visible !important;
         font-size: 0px !important;
@@ -33,7 +31,6 @@ st.markdown("""
         font-weight: 500;
     }
 
-    /* 3. Background Animasi Cyber */
     .stApp {
         background: linear-gradient(-45deg, #0a0e17, #111827, #1e1b4b, #0f172a) !important;
         background-size: 400% 400% !important;
@@ -52,10 +49,6 @@ sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 from src.feature_extractor import URLLexicalFeatureExtractor
 
 st.title("🛡️ Anti-Scam URL Phishing")
-
-# -------------------------------------------------------------
-# 1. LOAD TRANCO TOP DOMAINS (AUTO-WHITELIST)
-# -------------------------------------------------------------
 TRANCO_CSV_PATH = os.path.join('dataset', 'tranco_top1m.csv')
 EXTRA_SAFE_TLDS = {'go.id', 'ac.id', 'gov', 'edu', 'mil'}
 
@@ -88,10 +81,6 @@ def is_whitelisted(url: str) -> tuple[bool, str]:
     except Exception:
         pass
     return False, ""
-
-# -------------------------------------------------------------
-# 2. LOAD ARTIFACTS MODEL ML
-# -------------------------------------------------------------
 @st.cache_resource
 def load_artifacts():
     model_path = os.path.join('model', 'phishing_model.pkl')
@@ -107,10 +96,6 @@ def load_artifacts():
 
 model, feature_names = load_artifacts()
 extractor = URLLexicalFeatureExtractor()
-
-# -------------------------------------------------------------
-# 3. USER INTERFACE & DETEKSI
-# -------------------------------------------------------------
 input_url = st.text_input("Masukkan URL yang ingin diperiksa:", placeholder="Contoh: https://www.google.com")
 
 if st.button("Analisis URL", type="primary"):
@@ -122,46 +107,35 @@ if st.button("Analisis URL", type="primary"):
             
         st.divider()
         
-        # LAPIS 1: Auto-Whitelist Tranco
         is_white, matched_domain = is_whitelisted(input_url)
         
         if is_white:
             st.markdown("**Skor Risiko Kerentanan:** :green[**0.00%**]")
             st.success("✅ **STATUS: AMAN / TERVERIFIKASI**")
         else:
-            # LAPIS 2: Predict ML XGBoost (Jika domain tidak ada di Tranco)
             raw_features = extractor.extract_features(input_url)
             df_features = pd.DataFrame([raw_features])[feature_names]
 
             probabilities = model.predict_proba(df_features)[0]
             phishing_prob = float(probabilities[1])
 
-            # LAPIS 3: Heuristic Smoothing & Rule Intervention
             ext = tldextract.extract(input_url)
             is_common_tld = ext.suffix.lower() in ['com', 'org', 'net', 'id', 'co.id', 'io']
             has_no_bad_words = raw_features.get('suspicious_keyword_count', 0) == 0
             is_https = raw_features.get('is_https', 0) == 1
             has_no_ip = raw_features.get('has_ip', 0) == 0
 
-            # --- ATURAN HEURISTIC SMOOTHING & INTERVENSI ---
-
-            # A. Keringanan untuk HTTPS & TLD umum yang bersih
             if is_https and has_no_ip and is_common_tld and has_no_bad_words:
                 phishing_prob -= 0.15  
 
-            # B. Kalibrasi untuk IP Address tanpa kata kunci sensitif
             elif not has_no_ip and has_no_bad_words:
                 phishing_prob = 0.55
 
-            # C. Intervensi jika ML memberikan skor terlalu rendah (< 0.35) tapi ada anomali ringan
             elif phishing_prob < 0.35:
                 if not has_no_bad_words or raw_features.get('url_length', 0) > 75:
                     phishing_prob = 0.45 
-
-            # Pastikan skor tetap berada pada rentang [0.0, 1.0]
             phishing_prob = max(0.0, min(1.0, phishing_prob))
 
-            # Pengecekan status akhir
             if phishing_prob >= 0.70:
                 st.markdown(f"**Skor Risiko Kerentanan:** {phishing_prob:.2%}")
                 st.error("🚨 **STATUS: SANGAT BERBAHAYA (PHISHING)**")
