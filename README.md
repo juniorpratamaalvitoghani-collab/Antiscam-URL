@@ -40,8 +40,7 @@ Cara Menjalankan di Lokal
 4.Jalankan Aplikasi:
     streamlit run app.py
     
-Cara Deploy ke Streamlit Cloud
-Jika ingin mendesain deployment dari awal di Streamlit Community Cloud:
+## Cara Deploy ke Streamlit Cloud
 1.Persiapan Repository GitHub
 2.Login ke Streamlit Cloud
 Buka share.streamlit.io dan login menggunakan akun GitHub.
@@ -55,3 +54,12 @@ Main file path: app.py
 5.Deploy:
 Klik Deploy
 Streamlit Cloud akan membaca requirements.txt, menginstal seluruh pustaka yang diperlukan, dan menjalankan aplikasi secara otomatis.
+
+## Jika ingin melakukan pengembangan: 
+1.Login streamlit menggunakan akun github
+2.klik titik tiga pada project
+3.klik opsi codespace
+4.setelah selesai mengembangkan sourcenya,tekan out pada codespace
+5.klik titik tiga lagi
+6.pilih opsi reboot
+7.selesai
